@@ -1,7 +1,7 @@
 """ 
 This file is the entry point for MLAgentBench.
 """
-
+import os
 import argparse
 import sys
 from MLAgentBench import LLM
@@ -17,6 +17,8 @@ except:
 
 def run(agent_cls, args):
     with Environment(args) as env:
+        os.environ["MY_API_URL"] = args.other_api_url
+        os.environ["MY_API_KEY"] = args.other_api_key
 
         print("=====================================")
         research_problem, benchmark_folder_name = env.get_task_description()
@@ -69,6 +71,10 @@ if __name__ == "__main__":
 
     # langchain configs
     parser.add_argument("--langchain-agent", type=str, default="zero-shot-react-description", help="langchain agent")
+
+    # Other APIs configs
+    parser.add_argument("--other-api-url", type=str, default=None, help="the url for utilize other LLMs APIs") # "https://gpt-api.hkust-gz.edu.cn/v1/chat/completions"
+    parser.add_argument("--other-api-key", type=str, default=None, help="the key for utilize other LLMs APIs")
 
 
     args = parser.parse_args()

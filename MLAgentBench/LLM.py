@@ -6,6 +6,9 @@ import tenacity
 import tiktoken
 from .schema import TooLongPromptError, LLMError
 
+import json
+import requests
+
 enc = tiktoken.get_encoding("cl100k_base")
 
 try:
@@ -268,6 +271,33 @@ def complete_text_openai(prompt, stop_sequences=[], model="gpt-3.5-turbo", max_t
     else:
         response = openai.Completion.create(**{"prompt": prompt,**raw_request})
         completion = response["choices"][0]["text"]
+    if log_file is not None:
+        log_to_file(log_file, prompt, completion, model, max_tokens_to_sample)
+    return completion
+
+def complete_text_api(prompt, stop_sequences=[], model="gpt-3.5-turbo", max_tokens_to_sample=500, temperature=0.2, log_file=None, **kwargs):
+    """ Call the API to complete a prompt."""
+    raw_request = {
+        "model": model,
+        "temperature": temperature,
+        "max_tokens": max_tokens_to_sample,
+        "stop": stop_sequences or None,  # API doesn't like empty list
+        **kwargs
+    }
+    if model.startswith("gpt-3.5") or model.startswith("gpt-4"):
+        messages = [{"role": "user", "content": prompt}]
+        API_KEY = os.getenv("MY_API_KEY")
+        URL = os.getenv("MY_API_URL")
+        HEADERS = {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer {}".format(API_KEY)
+        }
+        response = requests.post(URL, headers=HEADERS, data=json.dumps({"messages": messages, **raw_request}))
+        response.raise_for_status()
+        response = response.json()
+        completion = response["choices"][0]["message"]["content"]
+    else:
+        raise ValueError("Completion API is not allowed!")
     if log_file is not None:
         log_to_file(log_file, prompt, completion, model, max_tokens_to_sample)
     return completion
