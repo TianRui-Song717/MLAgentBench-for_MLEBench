@@ -317,8 +317,11 @@ def complete_text(prompt, log_file, model, **kwargs):
             # use CRFM API since this specifies organization like "openai/..."
             completion = complete_text_crfm(prompt, stop_sequences=["Observation:"], log_file=log_file, model=model, **kwargs)
         else:
-            # use OpenAI API
-            completion = complete_text_openai(prompt, stop_sequences=["Observation:"], log_file=log_file, model=model, **kwargs)
+            if os.getenv["MY_API_URL"] is not None:
+                completion = complete_text_api(prompt, stop_sequences=["Observation:"], log_file=log_file, model=model,**kwargs)
+            else:
+                # use OpenAI API
+                completion = complete_text_openai(prompt, stop_sequences=["Observation:"], log_file=log_file, model=model, **kwargs)
         return completion
     except tenacity.RetryError as e:
         return str(e)  # If we failed even after retrying, just return the error message and the agent will see its failed attempt
