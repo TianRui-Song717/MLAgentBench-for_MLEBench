@@ -19,7 +19,7 @@ def run(agent_cls, args):
     with Environment(args) as env:
         os.environ["MY_API_URL"] = args.other_api_url
         os.environ["MY_API_KEY"] = args.other_api_key
-        os.environ["LOG_API_REP"] = args.print_api_log
+        os.environ["LOG_API_REP"] = str(args.print_api_log)
 
         print("=====================================")
         research_problem, benchmark_folder_name = env.get_task_description()

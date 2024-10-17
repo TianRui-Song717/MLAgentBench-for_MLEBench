@@ -295,7 +295,7 @@ def complete_text_api(prompt, stop_sequences=[], model="gpt-3.5-turbo", max_toke
         response = requests.post(URL, headers=HEADERS, data=json.dumps({"messages": messages, **raw_request}))
         response.raise_for_status()
         response = response.json()
-        if os.getenv("LOG_API_REP"):
+        if os.getenv("LOG_API_REP") == "True":
             print(response)
         completion = response["choices"][0]["message"]["content"]
     else:
