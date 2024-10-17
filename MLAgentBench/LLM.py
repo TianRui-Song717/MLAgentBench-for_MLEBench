@@ -295,7 +295,8 @@ def complete_text_api(prompt, stop_sequences=[], model="gpt-3.5-turbo", max_toke
         response = requests.post(URL, headers=HEADERS, data=json.dumps({"messages": messages, **raw_request}))
         response.raise_for_status()
         response = response.json()
-        print(response)
+        if os.getenv("LOG_API_REP"):
+            print(response)
         completion = response["choices"][0]["message"]["content"]
     else:
         raise ValueError("Completion API is not allowed!")

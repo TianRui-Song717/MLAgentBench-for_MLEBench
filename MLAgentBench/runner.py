@@ -19,6 +19,7 @@ def run(agent_cls, args):
     with Environment(args) as env:
         os.environ["MY_API_URL"] = args.other_api_url
         os.environ["MY_API_KEY"] = args.other_api_key
+        os.environ["LOG_API_REP"] = args.print_api_log
 
         print("=====================================")
         research_problem, benchmark_folder_name = env.get_task_description()
@@ -75,6 +76,7 @@ if __name__ == "__main__":
     # Other APIs configs
     parser.add_argument("--other-api-url", type=str, default=None, help="the url for utilize other LLMs APIs") # "https://gpt-api.hkust-gz.edu.cn/v1/chat/completions"
     parser.add_argument("--other-api-key", type=str, default=None, help="the key for utilize other LLMs APIs")
+    parser.add_argument("--print-api-log", action='store_true', help="print all LLMs response")
 
 
     args = parser.parse_args()
